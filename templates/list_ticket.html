@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}List New Ticket - TicketHub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="fw-bold mb-0">
+                        <i class="fas fa-plus-circle me-2" style="color: var(--primary);"></i>List New Ticket
+                    </h1>
+                    <p class="text-muted">Fill in the details below to sell your ticket</p>
+                </div>
+                <a href="/dashboard" class="btn btn-outline-gradient">
+                    <i class="fas fa-arrow-left me-2"></i> Dashboard
+                </a>
+            </div>
+            
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="row g-4">
+                        <div class="col-12">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-heading me-1" style="color: var(--primary);"></i>Event Name *
+                            </label>
+                            <input type="text" name="event_name" class="form-control form-control-lg" 
+                                   placeholder="e.g., Taylor Swift Concert" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-calendar-day me-1" style="color: var(--primary);"></i>Event Date & Time *
+                            </label>
+                            <input type="datetime-local" name="event_date" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-map-pin me-1" style="color: var(--primary);"></i>Venue *
+                            </label>
+                            <input type="text" name="venue" class="form-control" 
+                                   placeholder="e.g., Madison Square Garden" required>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-chair me-1" style="color: var(--primary);"></i>Seat Details <span class="text-muted">(optional)</span>
+                            </label>
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <input type="text" name="seat_section" class="form-control" placeholder="Section">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" name="seat_row" class="form-control" placeholder="Row">
+                                </div>
+                                <div class="col-md-4">
+                                    <input type="text" name="seat_number" class="form-control" placeholder="Seat">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-dollar-sign me-1" style="color: var(--primary);"></i>Your Price (USD) *
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="price" step="0.01" class="form-control" 
+                                       placeholder="0.00" required>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-tag me-1" style="color: var(--primary);"></i>Original Face Value
+                            </label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input type="number" name="original_price" step="0.01" class="form-control" 
+                                       placeholder="0.00">
+                            </div>
+                        </div>
+                        
+                        <div class="col-12">
+                            <label class="fw-semibold mb-2">
+                                <i class="fas fa-file-upload me-1" style="color: var(--primary);"></i>Proof of Purchase <span class="text-muted">(optional)</span>
+                            </label>
+                            <p class="text-muted small">Upload a screenshot or photo of your ticket receipt (PNG, JPG, PDF)</p>
+                            <input type="file" name="proof_image" class="form-control" 
+                                   accept=".png,.jpg,.jpeg,.gif,.pdf">
+                        </div>
+                        
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-gradient w-100 py-3">
+                                <i class="fas fa-plus-circle me-2"></i> List Ticket
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

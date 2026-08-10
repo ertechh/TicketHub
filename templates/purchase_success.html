@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Successful! - TicketHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Header -->
+            <div class="text-center mb-5">
+                <div class="mb-4">
+                    <i class="fas fa-check-circle" style="font-size: 5rem; color: #34D399;"></i>
+                </div>
+                <h1 class="fw-bold">🎉 Purchase Successful!</h1>
+                <p class="text-muted">Your ticket has been confirmed. Check your email for details.</p>
+            </div>
+
+            <!-- Ticket Details Card -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h4 class="fw-bold mb-3">
+                    <i class="fas fa-ticket-alt me-2" style="color: var(--primary);"></i>Ticket Details
+                </h4>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Event</small>
+                            <strong>{{ ticket.event_name }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Venue</small>
+                            <strong>{{ ticket.venue }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Date</small>
+                            <strong>{{ ticket.event_date.strftime('%B %d, %Y at %I:%M %p') }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Price Paid</small>
+                            <strong class="text-primary">${{ "%.2f"|format(purchase.amount) }}</strong>
+                        </div>
+                    </div>
+                    {% if ticket.seat_section %}
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Seat</small>
+                            <strong>Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}</strong>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block">Order ID</small>
+                            <strong>#{{ purchase.id }}</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Breakdown -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h4 class="fw-bold mb-3">
+                    <i class="fas fa-receipt me-2" style="color: var(--primary);"></i>Payment Breakdown
+                </h4>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Ticket Price</span>
+                    <span class="fw-bold">${{ "%.2f"|format(purchase.amount + purchase.platform_fee) }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>
+                        <i class="fas fa-percent me-1" style="color: var(--primary);"></i> Platform Fee
+                    </span>
+                    <span class="text-muted">${{ "%.2f"|format(purchase.platform_fee) }}</span>
+                </div>
+                <div class="d-flex justify-content-between py-2">
+                    <span class="fw-bold">Total Charged</span>
+                    <span class="fw-bold text-primary">${{ "%.2f"|format(purchase.amount) }}</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex flex-wrap gap-3 justify-content-center">
+                <a href="/" class="btn btn-gradient">
+                    <i class="fas fa-search me-2"></i> Browse More Tickets
+                </a>
+                <a href="/dashboard" class="btn btn-outline-gradient">
+                    <i class="fas fa-user me-2"></i> View My Purchases
+                </a>
+            </div>
+
+            <!-- Email Note -->
+            <div class="text-center mt-4">
+                <p class="text-muted small">
+                    <i class="fas fa-envelope me-1"></i> 
+                    A confirmation email has been sent to your registered email address.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

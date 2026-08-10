@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <div style="max-width: 400px; margin: 0 auto;">
+        <h2>Login</h2>
+        <div class="card">
+            <form method="POST">
+                <div style="margin-bottom: 1rem;">
+                    <label style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Email</label>
+                    <input type="email" name="email" required style="width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Password</label>
+                    <input type="password" name="password" required style="width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            </form>
+            <p style="margin-top: 1rem; text-align: center; color: #718096;">
+                Don't have an account? <a href="/register">Register</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

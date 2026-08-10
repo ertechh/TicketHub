@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block title %}TicketHub - Buy & Sell Event Tickets{% endblock %}
+
+{% block content %}
+<!-- ===== HERO SECTION ===== -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1>Find the <br>Perfect Ticket</h1>
+                <p>Discover amazing events, concerts, and shows. Buy and sell tickets safely with our secure platform.</p>
+                <div class="search-box d-flex mt-4">
+                    <input type="text" placeholder="Search events, artists, venues..." id="searchInput">
+                    <button onclick="searchTickets()">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </div>
+            </div>
+            <div class="col-lg-5 text-center d-none d-lg-block">
+                <i class="fas fa-ticket-alt" style="font-size: 8rem; color: rgba(255,255,255,0.15);"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TICKETS SECTION ===== -->
+<div class="container mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">🔥 Available Tickets</h2>
+            <p class="text-muted">Discover events happening near you</p>
+        </div>
+        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill">
+            <i class="fas fa-ticket-alt me-1"></i> {{ tickets|length }} tickets
+        </span>
+    </div>
+
+    {% if tickets %}
+        <div class="row g-4">
+            {% for ticket in tickets %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="ticket-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span class="event-badge">
+                                <i class="fas fa-calendar-alt me-1"></i> Live Event
+                            </span>
+                            {% if ticket.is_sold %}
+                                <span class="sold-badge"><i class="fas fa-times-circle me-1"></i>Sold</span>
+                            {% endif %}
+                        </div>
+                        
+                        <h5 class="event-name">{{ ticket.event_name }}</h5>
+                        
+                        <div class="event-detail">
+                            <i class="fas fa-map-pin"></i> {{ ticket.venue }}
+                        </div>
+                        <div class="event-detail">
+                            <i class="fas fa-calendar-day"></i> {{ ticket.event_date.strftime('%B %d, %Y') }}
+                        </div>
+                        <div class="event-detail">
+                            <i class="fas fa-clock"></i> {{ ticket.event_date.strftime('%I:%M %p') }}
+                        </div>
+                        
+                        {% if ticket.seat_section %}
+                            <div class="event-detail">
+                                <i class="fas fa-chair"></i> Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="price-tag">
+                            ${{ "%.2f"|format(ticket.price) }} <span>USD</span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-user-circle"></i> {{ ticket.seller.username }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="fas fa-clock"></i> Listed recently
+                            </small>
+                        </div>
+                        
+                        {% if current_user.is_authenticated %}
+                            {% if current_user.id != ticket.seller_id and not ticket.is_sold %}
+                                <a href="/buy_ticket/{{ ticket.id }}" class="btn btn-buy">
+                                    <i class="fas fa-shopping-cart me-2"></i> Buy Now
+                                </a>
+                            {% elif ticket.is_sold %}
+                                <button class="btn btn-buy" disabled>
+                                    <i class="fas fa-times-circle me-2"></i> Sold Out
+                                </button>
+                            {% else %}
+                                <button class="btn btn-buy" disabled>
+                                    <i class="fas fa-user me-2"></i> Your Ticket
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <a href="/login" class="btn btn-buy">
+                                <i class="fas fa-sign-in-alt me-2"></i> Login to Buy
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-ticket-alt" style="font-size: 4rem; color: #E2E8F0;"></i>
+            </div>
+            <h4 class="fw-bold">No tickets available</h4>
+            <p class="text-muted">Check back later or register as a seller to list your tickets!</p>
+            <a href="/register" class="btn btn-gradient mt-2">
+                <i class="fas fa-user-plus me-2"></i> Get Started
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function searchTickets() {
+    const query = document.getElementById('searchInput').value.toLowerCase();
+    const cards = document.querySelectorAll('.ticket-card');
+    let found = 0;
+    
+    cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(query)) {
+            card.closest('.col-lg-4').style.display = '';
+            found++;
+        } else {
+            card.closest('.col-lg-4').style.display = 'none';
+        }
+    });
+    
+    // Show message if no results
+    let message = document.getElementById('searchMessage');
+    if (!message) {
+        message = document.createElement('div');
+        message.id = 'searchMessage';
+        message.className = 'text-center py-4';
+        document.querySelector('.row').after(message);
+    }
+    
+    if (found === 0 && query.length > 0) {
+        message.innerHTML = `
+            <i class="fas fa-search" style="font-size: 2rem; color: #CBD5E1;"></i>
+            <p class="text-muted mt-2">No tickets found matching "${query}"</p>
+        `;
+    } else if (query.length > 0) {
+        message.innerHTML = `<p class="text-muted">Found ${found} ticket${found > 1 ? 's' : ''}</p>`;
+    } else {
+        message.innerHTML = '';
+    }
+}
+</script>
+{% endblock %}
