@@ -1,0 +1,4 @@
+python -m pip freeze > requirements.txt
+git add requirements.txt
+git commit -m "Add requirements for Render"
+git push
