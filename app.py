@@ -212,19 +212,6 @@ def logout():
     flash('Logged out successfully.', 'success')
     return redirect(url_for('home'))
 
-@app.route('/dashboard')
-@login_required
-def dashboard():
-    if current_user.is_seller:
-        my_tickets = Ticket.query.filter_by(seller_id=current_user.id).all()
-    else:
-        my_tickets = []
-    
-    # Get purchase history for buyers
-    my_purchases = Purchase.query.filter_by(buyer_id=current_user.id).all()
-    
-    return render_template('dashboard.html', tickets=my_tickets, purchases=my_purchases)
-
 @app.route('/list_ticket', methods=['GET', 'POST'])
 @login_required
 def list_ticket():
@@ -455,7 +442,6 @@ def verify_ticket(ticket_id):
                          status_color=status_color,
                          buyer_name=buyer_name)
 
-...
 @app.route('/dashboard')
 @login_required
 def dashboard():
@@ -479,13 +465,9 @@ def dashboard():
                          total_earnings=total_earnings,
                          total_sales=total_sales)
 
-
-
 # ------------------------
 # RUN THE APP
 # ------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-    
