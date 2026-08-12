@@ -435,21 +435,10 @@ def stripe_webhook():
     # This will handle real payment confirmations
     return jsonify({'status': 'success'})
 
-# ------------------------
-# RUN THE APP
-# ------------------------
-
-if __name__ == '__main__':
-    app.run(debug=True)
-
-
-
-
-    @app.route('/verify_ticket/<int:ticket_id>')
-    def verify_ticket(ticket_id):
-        ticket = Ticket.query.get_or_404(ticket_id) 
+@app.route('/verify_ticket/<int:ticket_id>')
+def verify_ticket(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
     
-    # Check if ticket exists and is sold
     if ticket.is_sold:
         purchase = Purchase.query.filter_by(ticket_id=ticket.id).first()
         buyer_name = purchase.buyer.username if purchase else "Unknown"
@@ -465,3 +454,10 @@ if __name__ == '__main__':
                          status=status, 
                          status_color=status_color,
                          buyer_name=buyer_name)
+
+# ------------------------
+# RUN THE APP
+# ------------------------
+
+if __name__ == '__main__':
+    app.run(debug=True)
