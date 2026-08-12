@@ -446,8 +446,8 @@ if __name__ == '__main__':
 
 
     @app.route('/verify_ticket/<int:ticket_id>')
-    def verify_ticket(ticket_id): 
-    ticket = Ticket.query.get_or_404(ticket_id)
+    def verify_ticket(ticket_id):
+        ticket = Ticket.query.get_or_404(ticket_id) 
     
     # Check if ticket exists and is sold
     if ticket.is_sold:
