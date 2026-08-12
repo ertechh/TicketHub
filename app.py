@@ -443,7 +443,7 @@ if __name__ == '__main__':
     app.run(debug=True)
 
 
--
+
 
     @app.route('/verify_ticket/<int:ticket_id>')
 def verify_ticket(ticket_id):
