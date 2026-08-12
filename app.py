@@ -455,9 +455,37 @@ def verify_ticket(ticket_id):
                          status_color=status_color,
                          buyer_name=buyer_name)
 
+...
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    if current_user.is_seller:
+        my_tickets = Ticket.query.filter_by(seller_id=current_user.id).all()
+        
+        # Calculate total earnings from sold tickets
+        sold_tickets = Ticket.query.filter_by(seller_id=current_user.id, is_sold=True).all()
+        total_earnings = sum(ticket.price for ticket in sold_tickets)
+        total_sales = len(sold_tickets)
+    else:
+        my_tickets = []
+        total_earnings = 0
+        total_sales = 0
+    
+    my_purchases = Purchase.query.filter_by(buyer_id=current_user.id).all()
+    
+    return render_template('dashboard.html', 
+                         tickets=my_tickets, 
+                         purchases=my_purchases,
+                         total_earnings=total_earnings,
+                         total_sales=total_sales)
+
+
+
 # ------------------------
 # RUN THE APP
 # ------------------------
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+    
