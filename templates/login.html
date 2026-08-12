@@ -1,25 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Login{% endblock %}
+{% block title %}Login - TicketHub{% endblock %}
 
 {% block content %}
-    <div style="max-width: 400px; margin: 0 auto;">
-        <h2>Login</h2>
-        <div class="card">
-            <form method="POST">
-                <div style="margin-bottom: 1rem;">
-                    <label style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Email</label>
-                    <input type="email" name="email" required style="width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px;">
-                </div>
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; font-weight: 500; margin-bottom: 0.25rem;">Password</label>
-                    <input type="password" name="password" required style="width: 100%; padding: 0.6rem; border: 1px solid #e2e8f0; border-radius: 6px;">
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
-            </form>
-            <p style="margin-top: 1rem; text-align: center; color: #718096;">
-                Don't have an account? <a href="/register">Register</a>
-            </p>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-5">
+            <div class="text-center mb-4">
+                <h1 class="fw-bold text-white">Welcome Back</h1>
+                <p class="text-secondary">Login to your TicketHub account</p>
+            </div>
+            
+            <div class="bg-card p-4 rounded-4 border border-secondary">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="fw-semibold mb-2 text-white">Email</label>
+                        <input type="email" name="email" class="form-control bg-dark text-white border-secondary" 
+                               placeholder="you@example.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="fw-semibold mb-2 text-white">Password</label>
+                        <input type="password" name="password" class="form-control bg-dark text-white border-secondary" 
+                               placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-accent w-100 py-2">
+                        <i class="fas fa-sign-in-alt me-2"></i> Login
+                    </button>
+                </form>
+                <p class="text-center text-secondary mt-3">
+                    Don't have an account? <a href="/register" class="text-accent fw-bold">Sign Up</a>
+                </p>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

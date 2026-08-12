@@ -7,43 +7,43 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="fw-bold mb-1">Dashboard</h1>
-            <p class="text-muted">Welcome back, {{ current_user.username }}!</p>
+            <p class="text-secondary">Welcome back, {{ current_user.username }}!</p>
         </div>
         {% if current_user.is_seller %}
-            <a href="/list_ticket" class="btn btn-gradient">
+            <a href="/list_ticket" class="btn btn-accent">
                 <i class="fas fa-plus-circle me-2"></i> List New Ticket
             </a>
         {% endif %}
     </div>
 
-    <!-- ===== USER STATS ===== -->
+    <!-- ===== STAT CARDS ===== -->
     <div class="row g-4 mb-4">
         <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-number">
+            <div class="bg-card p-4 rounded-4 border border-secondary">
+                <div class="h2 fw-bold text-white">
                     {{ tickets|length if current_user.is_seller else '—' }}
                 </div>
-                <div class="stat-label">
+                <div class="text-secondary">
                     <i class="fas fa-ticket-alt me-1"></i> Tickets Listed
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-number">
+            <div class="bg-card p-4 rounded-4 border border-secondary">
+                <div class="h2 fw-bold text-white">
                     {{ purchases|length if purchases else '0' }}
                 </div>
-                <div class="stat-label">
+                <div class="text-secondary">
                     <i class="fas fa-shopping-bag me-1"></i> Tickets Purchased
                 </div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="stat-card">
-                <div class="stat-number">
-                    {% if current_user.is_seller %}✅{% else %}👤{% endif %}
+            <div class="bg-card p-4 rounded-4 border border-secondary">
+                <div class="h2 fw-bold text-white">
+                    {% if current_user.is_seller %}🎫{% else %}🎟️{% endif %}
                 </div>
-                <div class="stat-label">
+                <div class="text-secondary">
                     <i class="fas fa-user-tag me-1"></i> 
                     {% if current_user.is_seller %}Seller Account{% else %}Buyer Account{% endif %}
                 </div>
@@ -52,8 +52,8 @@
     </div>
 
     <!-- ===== YOUR LISTED TICKETS ===== -->
-    <h3 class="fw-bold mb-3">
-        <i class="fas fa-ticket-alt me-2" style="color: var(--primary);"></i>Your Listed Tickets
+    <h3 class="fw-bold mb-3 text-white">
+        <i class="fas fa-ticket-alt me-2" style="color: var(--accent);"></i>Your Listed Tickets
     </h3>
     
     {% if tickets %}
@@ -61,108 +61,104 @@
             {% for ticket in tickets %}
                 <div class="col-lg-4 col-md-6">
                     <div class="ticket-card">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="event-badge">
-                                <i class="fas fa-calendar-alt me-1"></i> Listed
-                            </span>
-                            {% if ticket.is_sold %}
-                                <span class="sold-badge"><i class="fas fa-check-circle me-1"></i>Sold</span>
-                            {% else %}
-                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                                    <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> Available
-                                </span>
-                            {% endif %}
-                        </div>
-                        
-                        <h5 class="event-name">{{ ticket.event_name }}</h5>
-                        
-                        <div class="event-detail">
-                            <i class="fas fa-map-pin"></i> {{ ticket.venue }}
-                        </div>
-                        <div class="event-detail">
-                            <i class="fas fa-calendar-day"></i> {{ ticket.event_date.strftime('%B %d, %Y at %I:%M %p') }}
-                        </div>
-                        
-                        {% if ticket.seat_section %}
-                            <div class="event-detail">
-                                <i class="fas fa-chair"></i> Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="event-name">{{ ticket.event_name }}</h5>
+                                {% if ticket.is_sold %}
+                                    <span class="sold-badge"><i class="fas fa-check-circle me-1"></i>Sold</span>
+                                {% else %}
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i> Available
+                                    </span>
+                                {% endif %}
                             </div>
-                        {% endif %}
-                        
-                        <div class="price-tag">
-                            ${{ "%.2f"|format(ticket.price) }} <span>USD</span>
+                            
+                            <div class="event-detail">
+                                <i class="fas fa-map-pin"></i> {{ ticket.venue }}
+                            </div>
+                            <div class="event-detail">
+                                <i class="far fa-calendar-alt"></i> {{ ticket.event_date.strftime('%B %d, %Y at %I:%M %p') }}
+                            </div>
+                            
+                            {% if ticket.seat_section %}
+                                <div class="event-detail">
+                                    <i class="fas fa-chair"></i> Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}
+                                </div>
+                            {% endif %}
+                            
+                            <div class="price-tag">
+                                ${{ "%.2f"|format(ticket.price) }} <span>USD</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center py-4 mb-5">
+        <div class="text-center py-4 mb-5 bg-card rounded-4 border border-secondary">
             <div class="mb-3">
-                <i class="fas fa-ticket-alt" style="font-size: 3rem; color: #E2E8F0;"></i>
+                <i class="fas fa-ticket-alt" style="font-size: 3rem; color: var(--text-muted);"></i>
             </div>
-            <p class="text-muted">You haven't listed any tickets yet.</p>
+            <p class="text-secondary">You haven't listed any tickets yet.</p>
             {% if current_user.is_seller %}
-                <a href="/list_ticket" class="btn btn-gradient">
+                <a href="/list_ticket" class="btn btn-accent">
                     <i class="fas fa-plus-circle me-2"></i> List Your First Ticket
                 </a>
             {% else %}
-                <p class="text-muted">Want to sell? <a href="/register" class="text-primary fw-bold">Register as a seller</a></p>
+                <p class="text-secondary">Want to sell? <a href="/register" class="text-accent fw-bold">Register as a seller</a></p>
             {% endif %}
         </div>
     {% endif %}
 
     <!-- ===== YOUR PURCHASES ===== -->
-    <h3 class="fw-bold mb-3">
-        <i class="fas fa-shopping-bag me-2" style="color: var(--primary);"></i>Your Purchases
+    <h3 class="fw-bold mb-3 text-white">
+        <i class="fas fa-shopping-bag me-2" style="color: var(--accent);"></i>Your Purchases
     </h3>
     
     {% if purchases %}
         <div class="row g-4">
             {% for purchase in purchases %}
                 <div class="col-lg-4 col-md-6">
-                    <div class="ticket-card" style="border-top: 4px solid #34D399;">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="event-badge" style="background: #34D399;">
-                                <i class="fas fa-check-circle me-1"></i> Confirmed
-                            </span>
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>{{ purchase.created_at.strftime('%b %d') }}
-                            </small>
-                        </div>
-                        
-                        <h5 class="event-name">{{ purchase.ticket.event_name }}</h5>
-                        
-                        <div class="event-detail">
-                            <i class="fas fa-map-pin"></i> {{ purchase.ticket.venue }}
-                        </div>
-                        <div class="event-detail">
-                            <i class="fas fa-calendar-day"></i> {{ purchase.ticket.event_date.strftime('%B %d, %Y') }}
-                        </div>
-                        
-                        <div class="price-tag">
-                            ${{ "%.2f"|format(purchase.amount) }} <span>USD</span>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
-                            <small class="text-muted">
-                                <i class="fas fa-hashtag me-1"></i> Order #{{ purchase.id }}
-                            </small>
-                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
-                                <i class="fas fa-check-circle me-1"></i> Complete
-                            </span>
+                    <div class="ticket-card" style="border-top: 3px solid #34D399;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <h5 class="event-name">{{ purchase.ticket.event_name }}</h5>
+                                <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                    <i class="fas fa-check-circle me-1"></i> Confirmed
+                                </span>
+                            </div>
+                            
+                            <div class="event-detail">
+                                <i class="fas fa-map-pin"></i> {{ purchase.ticket.venue }}
+                            </div>
+                            <div class="event-detail">
+                                <i class="far fa-calendar-alt"></i> {{ purchase.ticket.event_date.strftime('%B %d, %Y') }}
+                            </div>
+                            
+                            <div class="price-tag">
+                                ${{ "%.2f"|format(purchase.amount) }} <span>USD</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top border-secondary">
+                                <small class="text-secondary">
+                                    <i class="fas fa-hashtag me-1"></i> Order #{{ purchase.id }}
+                                </small>
+                                <small class="text-secondary">
+                                    <i class="far fa-clock me-1"></i>{{ purchase.created_at.strftime('%b %d') }}
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center py-4">
+        <div class="text-center py-4 bg-card rounded-4 border border-secondary">
             <div class="mb-3">
-                <i class="fas fa-shopping-bag" style="font-size: 3rem; color: #E2E8F0;"></i>
+                <i class="fas fa-shopping-bag" style="font-size: 3rem; color: var(--text-muted);"></i>
             </div>
-            <p class="text-muted">You haven't purchased any tickets yet.</p>
-            <a href="/" class="btn btn-outline-gradient">
+            <p class="text-secondary">You haven't purchased any tickets yet.</p>
+            <a href="/" class="btn btn-outline-light">
                 <i class="fas fa-search me-2"></i> Browse Tickets
             </a>
         </div>
