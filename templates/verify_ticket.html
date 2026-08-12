@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Ticket - TicketHub{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="bg-card p-5 rounded-4 border border-secondary text-center">
+                <!-- Status Icon -->
+                <div class="mb-4">
+                    {% if ticket.is_sold %}
+                        <i class="fas fa-check-circle" style="font-size: 4rem; color: #34D399;"></i>
+                    {% else %}
+                        <i class="fas fa-times-circle" style="font-size: 4rem; color: #F87171;"></i>
+                    {% endif %}
+                </div>
+                
+                <h2 class="fw-bold text-white mb-2">{{ ticket.event_name }}</h2>
+                <p class="text-secondary">{{ ticket.venue }}</p>
+                
+                <div class="bg-dark p-3 rounded-3 mb-3">
+                    <p class="text-secondary mb-0">Status</p>
+                    <p class="fw-bold mb-0" style="color: {{ status_color }};">{{ status }}</p>
+                </div>
+                
+                <div class="row g-3 mt-2">
+                    <div class="col-6">
+                        <div class="bg-dark p-2 rounded-3">
+                            <p class="text-secondary mb-0 small">Date</p>
+                            <p class="text-white mb-0 small">{{ ticket.event_date.strftime('%B %d, %Y') }}</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="bg-dark p-2 rounded-3">
+                            <p class="text-secondary mb-0 small">Seat</p>
+                            <p class="text-white mb-0 small">
+                                {% if ticket.seat_section %}
+                                    Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}
+                                {% else %}
+                                    General Admission
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-dark p-2 rounded-3">
+                            <p class="text-secondary mb-0 small">Ticket ID</p>
+                            <p class="text-white mb-0 small">#{{ ticket.id }}</p>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="bg-dark p-2 rounded-3">
+                            <p class="text-secondary mb-0 small">Purchased by</p>
+                            <p class="text-white mb-0 small">{{ buyer_name }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="text-secondary mt-4 small">
+                    <i class="fas fa-shield-alt me-1" style="color: var(--accent);"></i> 
+                    This ticket is verified by TicketHub
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

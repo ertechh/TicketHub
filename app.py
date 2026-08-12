@@ -114,12 +114,23 @@ def calculate_fees(amount):
     return round(platform_fee, 2), round(seller_payout, 2)
 
 def generate_ticket_qr(ticket_id, event_name, venue, date):
-    """Generate a QR code for the ticket"""
-    data = f"Ticket #{ticket_id}: {event_name} at {venue} on {date}"
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(data)
+    """Generate a QR code that links to the ticket verification page"""
+    # Create a verification URL (change to your domain when deployed)
+    base_url = "http://127.0.0.1:5000"  # Local development
+    # base_url = "https://tickethub.onrender.com"  # Production
+    
+    verify_url = f"{base_url}/verify_ticket/{ticket_id}"
+    
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(verify_url)
     qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
+    
+    img = qr.make_image(fill_color="#6C3CE1", back_color="white")
     buffered = BytesIO()
     img.save(buffered, format="PNG")
     img_str = base64.b64encode(buffered.getvalue()).decode()
@@ -430,3 +441,27 @@ def stripe_webhook():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+-
+
+    @app.route('/verify_ticket/<int:ticket_id>')
+def verify_ticket(ticket_id):
+    ticket = Ticket.query.get_or_404(ticket_id)
+    
+    # Check if ticket exists and is sold
+    if ticket.is_sold:
+        purchase = Purchase.query.filter_by(ticket_id=ticket.id).first()
+        buyer_name = purchase.buyer.username if purchase else "Unknown"
+        status = "✅ VALID TICKET"
+        status_color = "#34D399"
+    else:
+        buyer_name = "Not yet purchased"
+        status = "❌ INVALID TICKET"
+        status_color = "#F87171"
+    
+    return render_template('verify_ticket.html', 
+                         ticket=ticket, 
+                         status=status, 
+                         status_color=status_color,
+                         buyer_name=buyer_name)
