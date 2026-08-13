@@ -65,6 +65,8 @@ class User(UserMixin, db.Model):
     
     tickets = db.relationship('Ticket', backref='seller', lazy=True)
     purchases = db.relationship('Purchase', backref='buyer', lazy=True)
+    reviews_received = db.relationship('Review', foreign_keys='Review.seller_id', backref='seller', lazy=True)
+    reviews_given = db.relationship('Review', foreign_keys='Review.buyer_id', backref='buyer', lazy=True)
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
@@ -98,6 +100,18 @@ class Purchase(db.Model):
     
     buyer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     ticket_id = db.Column(db.Integer, db.ForeignKey('ticket.id'), nullable=False)
+
+class Review(db.Model):
+    __tablename__ = 'review'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    rating = db.Column(db.Integer, nullable=False)  # 1-5
+    comment = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    buyer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    purchase_id = db.Column(db.Integer, db.ForeignKey('purchase.id'), nullable=False)
 
 # Create tables
 with app.app_context():
@@ -527,7 +541,8 @@ def dashboard():
 @login_required
 def my_tickets():
     purchases = Purchase.query.filter_by(buyer_id=current_user.id).order_by(Purchase.created_at.desc()).all()
-    return render_template('my_tickets.html', purchases=purchases)
+    now = datetime.now()
+    return render_template('my_tickets.html', purchases=purchases, now=now)
 
 @app.route('/download_ticket/<int:purchase_id>')
 @login_required
@@ -593,6 +608,62 @@ def download_ticket(purchase_id):
     # Return PDF
     buffer.seek(0)
     return send_file(buffer, as_attachment=True, download_name=f"ticket_{purchase.id}.pdf", mimetype='application/pdf')
+
+@app.route('/leave_review/<int:purchase_id>', methods=['GET', 'POST'])
+@login_required
+def leave_review(purchase_id):
+    purchase = Purchase.query.get_or_404(purchase_id)
+    
+    # Make sure the user bought this ticket
+    if purchase.buyer_id != current_user.id:
+        flash('You can only review tickets you purchased.', 'error')
+        return redirect(url_for('my_tickets'))
+    
+    # Check if already reviewed
+    existing_review = Review.query.filter_by(purchase_id=purchase.id).first()
+    if existing_review:
+        flash('You already reviewed this purchase.', 'info')
+        return redirect(url_for('my_tickets'))
+    
+    if request.method == 'POST':
+        rating = int(request.form.get('rating', 0))
+        comment = request.form.get('comment', '').strip()
+        
+        if rating < 1 or rating > 5:
+            flash('Please select a rating from 1 to 5 stars.', 'error')
+            return render_template('leave_review.html', purchase=purchase)
+        
+        review = Review(
+            rating=rating,
+            comment=comment,
+            buyer_id=current_user.id,
+            seller_id=purchase.ticket.seller_id,
+            purchase_id=purchase.id
+        )
+        
+        db.session.add(review)
+        db.session.commit()
+        
+        flash('✅ Thank you for your review! It helps build trust in our community.', 'success')
+        return redirect(url_for('my_tickets'))
+    
+    return render_template('leave_review.html', purchase=purchase)
+
+@app.route('/seller_reviews/<int:seller_id>')
+def seller_reviews(seller_id):
+    seller = User.query.get_or_404(seller_id)
+    reviews = Review.query.filter_by(seller_id=seller_id).order_by(Review.created_at.desc()).all()
+    
+    # Calculate average rating
+    if reviews:
+        avg_rating = sum(r.rating for r in reviews) / len(reviews)
+    else:
+        avg_rating = 0
+    
+    return render_template('seller_reviews.html', 
+                         seller=seller, 
+                         reviews=reviews, 
+                         avg_rating=avg_rating)
 
 # ------------------------
 # RUN THE APP

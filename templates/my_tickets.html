@@ -110,5 +110,17 @@
             </a>
         </div>
     {% endif %}
+
+</div>
+
+<!-- Review Button -->
+<div class="mt-2">
+    {% if purchase.ticket.event_date < now %}
+        {% set existing_review = namespace(found=false) %}
+        <!-- This will be handled in the route -->
+        <a href="/leave_review/{{ purchase.id }}" class="btn btn-accent btn-sm w-100">
+            <i class="fas fa-star me-1"></i> Leave a Review
+        </a>
+    {% endif %}
 </div>
 {% endblock %}

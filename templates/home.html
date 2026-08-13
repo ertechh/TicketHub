@@ -133,6 +133,27 @@
                                 <i class="fas fa-user-circle me-1"></i> Listed by {{ ticket.seller.username }}
                             </div>
                             
+                            <!-- Seller Rating -->
+<div class="d-flex align-items-center gap-2 mt-1">
+    <span class="text-secondary small">by</span>
+    <a href="/seller_reviews/{{ ticket.seller.id }}" class="text-white small text-decoration-none">
+        {{ ticket.seller.username }}
+    </a>
+    {% set avg = ticket.seller.reviews_received|map(attribute='rating')|sum / ticket.seller.reviews_received|length if ticket.seller.reviews_received else 0 %}
+    {% if avg > 0 %}
+        <span class="text-secondary small">
+            {% for i in range(5) %}
+                {% if i < avg|int %}
+                    <i class="fas fa-star" style="color: #F59E0B; font-size: 0.7rem;"></i>
+                {% else %}
+                    <i class="fas fa-star" style="color: #4a4a4a; font-size: 0.7rem;"></i>
+                {% endif %}
+            {% endfor %}
+            ({{ "%.1f"|format(avg) }})
+        </span>
+    {% endif %}
+</div>
+
                             {% if current_user.is_authenticated %}
                                 {% if current_user.id != ticket.seller_id and not ticket.is_sold %}
                                     <a href="/buy_ticket/{{ ticket.id }}" class="btn btn-buy">

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ seller.username }} - TicketHub{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Seller Header -->
+    <div class="bg-card p-4 rounded-4 border border-secondary mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="fw-bold text-white mb-1">
+                    <i class="fas fa-user-circle me-2" style="color: var(--accent);"></i>
+                    {{ seller.username }}
+                </h1>
+                <div class="d-flex align-items-center gap-3">
+                    <div>
+                        {% if avg_rating > 0 %}
+                            <span class="text-white fw-bold">{{ "%.1f"|format(avg_rating) }}</span>
+                            {% for i in range(5) %}
+                                {% if i < avg_rating|int %}
+                                    <i class="fas fa-star" style="color: #F59E0B;"></i>
+                                {% else %}
+                                    <i class="fas fa-star" style="color: #4a4a4a;"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span class="text-secondary">({{ reviews|length }} reviews)</span>
+                        {% else %}
+                            <span class="text-secondary">No reviews yet</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <a href="/" class="btn btn-outline-light">
+                    <i class="fas fa-search me-2"></i> Browse Tickets
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews List -->
+    <h3 class="fw-bold text-white mb-3">
+        <i class="fas fa-comments me-2" style="color: var(--accent);"></i>
+        All Reviews
+    </h3>
+
+    {% if reviews %}
+        <div class="row g-4">
+            {% for review in reviews %}
+                <div class="col-12">
+                    <div class="bg-card p-4 rounded-4 border border-secondary">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="mb-1">
+                                    {% for i in range(5) %}
+                                        {% if i < review.rating %}
+                                            <i class="fas fa-star" style="color: #F59E0B;"></i>
+                                        {% else %}
+                                            <i class="fas fa-star" style="color: #4a4a4a;"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <span class="text-secondary ms-2">{{ review.rating }} / 5</span>
+                                </div>
+                                <p class="text-secondary small mb-1">
+                                    <i class="fas fa-user me-1"></i> {{ review.buyer.username }}
+                                    <span class="mx-2">•</span>
+                                    <i class="far fa-clock me-1"></i> {{ review.created_at.strftime('%B %d, %Y') }}
+                                </p>
+                            </div>
+                            <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill">
+                                <i class="fas fa-check-circle me-1"></i> Verified Purchase
+                            </span>
+                        </div>
+                        {% if review.comment %}
+                            <p class="text-white mt-2 mb-0" style="font-style: italic;">"{{ review.comment }}"</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5 bg-card rounded-4 border border-secondary">
+            <div class="mb-4">
+                <i class="fas fa-star" style="font-size: 4rem; color: var(--text-muted);"></i>
+            </div>
+            <h4 class="fw-bold text-white">No Reviews Yet</h4>
+            <p class="text-secondary">{{ seller.username }} hasn't received any reviews yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
