@@ -10,12 +10,15 @@
             <div class="col-lg-7">
                 <h1>Find Your <br><span class="highlight">Perfect Event</span></h1>
                 <p>Discover and secure tickets to the biggest concerts, sports, and shows.</p>
-                <div class="search-box d-flex mt-4">
-                    <input type="text" placeholder="Search artists, events, venues..." id="searchInput">
-                    <button onclick="searchTickets()">
+                
+                <!-- Search Form -->
+                <form method="GET" action="/" class="search-box d-flex mt-4">
+                    <input type="text" name="search" placeholder="Search artists, events, venues..." 
+                           value="{{ search_query }}" class="flex-grow-1">
+                    <button type="submit">
                         <i class="fas fa-search me-2"></i>Search
                     </button>
-                </div>
+                </form>
             </div>
             <div class="col-lg-5 text-center d-none d-lg-block">
                 <i class="fas fa-ticket-alt" style="font-size: 8rem; color: rgba(255,255,255,0.04);"></i>
@@ -23,6 +26,55 @@
         </div>
     </div>
 </section>
+
+<!-- ===== FILTERS SECTION ===== -->
+<div class="container mb-4">
+    <div class="bg-card p-3 rounded-4 border border-secondary">
+        <form method="GET" action="/" class="row g-2 align-items-end">
+            <!-- Hidden field to preserve search query -->
+            <input type="hidden" name="search" value="{{ search_query }}">
+            
+            <!-- Date Filter -->
+            <div class="col-md-3">
+                <label class="text-secondary small mb-1 d-block">📅 Date</label>
+                <select name="date" class="form-select bg-dark text-white border-secondary">
+                    <option value="">All Dates</option>
+                    <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                    <option value="week" {% if date_filter == 'week' %}selected{% endif %}>This Week</option>
+                    <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+                </select>
+            </div>
+            
+            <!-- Sort By -->
+            <div class="col-md-3">
+                <label class="text-secondary small mb-1 d-block">💰 Sort</label>
+                <select name="sort" class="form-select bg-dark text-white border-secondary">
+                    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                    <option value="price_low" {% if sort_by == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_high" {% if sort_by == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+                </select>
+            </div>
+            
+            <!-- Venue Filter -->
+            <div class="col-md-3">
+                <label class="text-secondary small mb-1 d-block">📍 Venue</label>
+                <select name="venue" class="form-select bg-dark text-white border-secondary">
+                    <option value="">All Venues</option>
+                    {% for venue in venues %}
+                        <option value="{{ venue }}" {% if venue_filter == venue %}selected{% endif %}>{{ venue }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Apply Button -->
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-accent w-100">
+                    <i class="fas fa-sliders-h me-2"></i>Apply Filters
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- ===== TICKETS SECTION ===== -->
 <div class="container mb-5">
@@ -110,50 +162,12 @@
             <div class="mb-4">
                 <i class="fas fa-ticket-alt" style="font-size: 4rem; color: var(--text-muted);"></i>
             </div>
-            <h4 class="fw-bold text-white">No tickets available</h4>
-            <p class="text-secondary">Check back later or list your own tickets!</p>
-            <a href="/register" class="btn btn-accent mt-2">
-                <i class="fas fa-user-plus me-2"></i> Get Started
+            <h4 class="fw-bold text-white">No tickets found</h4>
+            <p class="text-secondary">Try adjusting your search or filters.</p>
+            <a href="/" class="btn btn-accent mt-2">
+                <i class="fas fa-undo me-2"></i> Clear Filters
             </a>
         </div>
     {% endif %}
 </div>
-
-<script>
-function searchTickets() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const cards = document.querySelectorAll('.ticket-card');
-    let found = 0;
-    
-    cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        const parentCol = card.closest('.col-lg-4');
-        if (text.includes(query)) {
-            parentCol.style.display = '';
-            found++;
-        } else {
-            parentCol.style.display = 'none';
-        }
-    });
-    
-    let message = document.getElementById('searchMessage');
-    if (!message) {
-        message = document.createElement('div');
-        message.id = 'searchMessage';
-        message.className = 'text-center py-4';
-        document.querySelector('.row').after(message);
-    }
-    
-    if (found === 0 && query.length > 0) {
-        message.innerHTML = `
-            <i class="fas fa-search" style="font-size: 2rem; color: var(--text-muted);"></i>
-            <p class="text-secondary mt-2">No tickets found matching "${query}"</p>
-        `;
-    } else if (query.length > 0) {
-        message.innerHTML = `<p class="text-secondary">Found ${found} ticket${found > 1 ? 's' : ''}</p>`;
-    } else {
-        message.innerHTML = '';
-    }
-}
-</script>
 {% endblock %}

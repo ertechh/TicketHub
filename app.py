@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
+from sqlalchemy import or_, func
 import os
 from dotenv import load_dotenv
 from werkzeug.utils import secure_filename
@@ -154,8 +155,61 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    tickets = Ticket.query.filter_by(is_sold=False).order_by(Ticket.created_at.desc()).all()
-    return render_template('home.html', tickets=tickets)
+    # Get filter parameters from URL
+    search_query = request.args.get('search', '').strip()
+    date_filter = request.args.get('date', '')
+    sort_by = request.args.get('sort', 'newest')
+    venue_filter = request.args.get('venue', '')
+    
+    # Start with base query
+    query = Ticket.query.filter_by(is_sold=False)
+    
+    # Apply search filter
+    if search_query:
+        query = query.filter(
+            db.or_(
+                Ticket.event_name.ilike(f'%{search_query}%'),
+                Ticket.venue.ilike(f'%{search_query}%')
+            )
+        )
+    
+    # Apply date filter
+    today = datetime.now().date()
+    if date_filter == 'today':
+        query = query.filter(db.func.date(Ticket.event_date) == today)
+    elif date_filter == 'week':
+        end_of_week = today + timedelta(days=7)
+        query = query.filter(db.func.date(Ticket.event_date) >= today, db.func.date(Ticket.event_date) <= end_of_week)
+    elif date_filter == 'month':
+        end_of_month = today + timedelta(days=30)
+        query = query.filter(db.func.date(Ticket.event_date) >= today, db.func.date(Ticket.event_date) <= end_of_month)
+    
+    # Apply venue filter
+    if venue_filter:
+        query = query.filter(Ticket.venue.ilike(f'%{venue_filter}%'))
+    
+    # Apply sorting
+    if sort_by == 'price_low':
+        query = query.order_by(Ticket.price.asc())
+    elif sort_by == 'price_high':
+        query = query.order_by(Ticket.price.desc())
+    else:  # newest
+        query = query.order_by(Ticket.created_at.desc())
+    
+    # Get all tickets
+    tickets = query.all()
+    
+    # Get all unique venues for filter dropdown
+    all_venues = db.session.query(Ticket.venue).filter_by(is_sold=False).distinct().all()
+    venues = [v[0] for v in all_venues if v[0]]
+    
+    return render_template('home.html', 
+                         tickets=tickets, 
+                         search_query=search_query,
+                         date_filter=date_filter,
+                         sort_by=sort_by,
+                         venue_filter=venue_filter,
+                         venues=venues)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
