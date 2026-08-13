@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from datetime import datetime
@@ -10,6 +10,10 @@ import qrcode
 from io import BytesIO
 import base64
 import resend
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.utils import ImageReader
+import tempfile
 
 # Load environment variables
 load_dotenv()
@@ -464,6 +468,77 @@ def dashboard():
                          purchases=my_purchases,
                          total_earnings=total_earnings,
                          total_sales=total_sales)
+
+@app.route('/my_tickets')
+@login_required
+def my_tickets():
+    purchases = Purchase.query.filter_by(buyer_id=current_user.id).order_by(Purchase.created_at.desc()).all()
+    return render_template('my_tickets.html', purchases=purchases)
+
+@app.route('/download_ticket/<int:purchase_id>')
+@login_required
+def download_ticket(purchase_id):
+    purchase = Purchase.query.get_or_404(purchase_id)
+    
+    # Make sure the user owns this ticket
+    if purchase.buyer_id != current_user.id:
+        flash('You do not have permission to download this ticket.', 'error')
+        return redirect(url_for('my_tickets'))
+    
+    ticket = purchase.ticket
+    
+    # Create PDF
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Header
+    c.setFillColorRGB(0.42, 0.24, 0.88)
+    c.rect(0, height - 60, width, 60, fill=1)
+    c.setFillColorRGB(1, 1, 1)
+    c.setFont("Helvetica-Bold", 24)
+    c.drawString(50, height - 40, "🎟️ TicketHub")
+    
+    # Ticket Details
+    c.setFillColorRGB(0, 0, 0)
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(50, height - 100, ticket.event_name)
+    
+    c.setFont("Helvetica", 14)
+    c.drawString(50, height - 130, f"📍 Venue: {ticket.venue}")
+    c.drawString(50, height - 155, f"📅 Date: {ticket.event_date.strftime('%B %d, %Y at %I:%M %p')}")
+    
+    if ticket.seat_section:
+        c.drawString(50, height - 180, f"💺 Seat: Section {ticket.seat_section}, Row {ticket.seat_row}, Seat {ticket.seat_number}")
+    
+    c.drawString(50, height - 205, f"💰 Price: ${purchase.amount:.2f}")
+    c.drawString(50, height - 230, f"📦 Order #: {purchase.id}")
+    
+    # QR Code
+    qr_img = generate_ticket_qr(
+        ticket.id,
+        ticket.event_name,
+        ticket.venue,
+        ticket.event_date.strftime('%B %d, %Y at %I:%M %p')
+    )
+    
+    # Decode base64 QR code and add to PDF
+    qr_data = base64.b64decode(qr_img)
+    qr_buffer = BytesIO(qr_data)
+    qr_image = ImageReader(qr_buffer)
+    c.drawImage(qr_image, width - 150, height - 200, width=100, height=100)
+    
+    # Footer
+    c.setFillColorRGB(0.5, 0.5, 0.5)
+    c.setFont("Helvetica", 10)
+    c.drawString(50, 40, "This is a digital ticket. Please present this PDF or the QR code at the event entrance.")
+    c.drawString(50, 25, "© 2026 TicketHub. All rights reserved.")
+    
+    c.save()
+    
+    # Return PDF
+    buffer.seek(0)
+    return send_file(buffer, as_attachment=True, download_name=f"ticket_{purchase.id}.pdf", mimetype='application/pdf')
 
 # ------------------------
 # RUN THE APP
