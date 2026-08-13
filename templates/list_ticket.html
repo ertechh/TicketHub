@@ -21,6 +21,7 @@
             <div class="bg-card p-4 rounded-4 border border-secondary">
                 <form method="POST" enctype="multipart/form-data">
                     <div class="row g-4">
+                        <!-- Event Name -->
                         <div class="col-12">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-heading me-1" style="color: var(--accent);"></i>Event Name *
@@ -29,6 +30,7 @@
                                    placeholder="e.g., Taylor Swift Concert" required>
                         </div>
                         
+                        <!-- Event Date & Venue -->
                         <div class="col-md-6">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-calendar-day me-1" style="color: var(--accent);"></i>Event Date & Time *
@@ -44,6 +46,7 @@
                                    placeholder="e.g., Madison Square Garden" required>
                         </div>
                         
+                        <!-- Seat Details -->
                         <div class="col-12">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-chair me-1" style="color: var(--accent);"></i>Seat Details <span class="text-secondary">(optional)</span>
@@ -61,6 +64,7 @@
                             </div>
                         </div>
                         
+                        <!-- Price -->
                         <div class="col-md-6">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-dollar-sign me-1" style="color: var(--accent);"></i>Your Price (USD) *
@@ -83,6 +87,7 @@
                             </div>
                         </div>
                         
+                        <!-- Proof of Purchase -->
                         <div class="col-12">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-file-upload me-1" style="color: var(--accent);"></i>Proof of Purchase <span class="text-secondary">(optional)</span>
@@ -90,10 +95,29 @@
                             <p class="text-secondary small">Upload a screenshot or photo of your ticket receipt (PNG, JPG, PDF)</p>
                             <input type="file" name="proof_image" class="form-control bg-dark text-white border-secondary" 
                                    accept=".png,.jpg,.jpeg,.gif,.pdf">
+                            <small class="text-secondary">Max file size: 16MB</small>
                         </div>
                         
+                        <!-- ===== NEW: Event Image Upload ===== -->
                         <div class="col-12">
-                            <button type="submit" class="btn btn-accent w-100 py-3">
+                            <label class="fw-semibold mb-2 text-white">
+                                <i class="fas fa-image me-1" style="color: var(--accent);"></i>Event Image <span class="text-secondary">(optional)</span>
+                            </label>
+                            <p class="text-secondary small">Upload a photo of the event, artist, or venue to make your listing stand out</p>
+                            <input type="file" name="event_image" class="form-control bg-dark text-white border-secondary" 
+                                   accept=".png,.jpg,.jpeg,.gif">
+                            <small class="text-secondary">Recommended size: 1200 x 800px. Max file size: 16MB</small>
+                            
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-3" style="display: none;">
+                                <p class="text-secondary small">Preview:</p>
+                                <img id="previewImg" src="#" alt="Event preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid var(--border-color);">
+                            </div>
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-accent w-100 py-3" id="submitBtn">
                                 <i class="fas fa-plus-circle me-2"></i> List Ticket
                             </button>
                         </div>
@@ -103,4 +127,29 @@
         </div>
     </div>
 </div>
+
+<script>
+// Image preview
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.querySelector('input[name="event_image"]');
+    const previewDiv = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    
+    if (imageInput) {
+        imageInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewDiv.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                previewDiv.style.display = 'none';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

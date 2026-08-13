@@ -73,6 +73,15 @@
                 </button>
             </div>
         </form>
+        
+        <!-- Clear Filters Link -->
+        {% if search_query or date_filter or venue_filter %}
+            <div class="text-end mt-2">
+                <a href="/" class="text-secondary small text-decoration-none">
+                    <i class="fas fa-times me-1"></i> Clear all filters
+                </a>
+            </div>
+        {% endif %}
     </div>
 </div>
 
@@ -93,9 +102,13 @@
             {% for ticket in tickets %}
                 <div class="col-lg-4 col-md-6">
                     <div class="ticket-card">
-                        <!-- Card Image with Placeholder -->
+                        <!-- Card Image -->
                         <div class="card-image" style="background: linear-gradient(135deg, #1a1a2e, #16213e);">
-                            <i class="fas fa-music"></i>
+                            {% if ticket.event_image %}
+                                <img src="/static/uploads/{{ ticket.event_image }}" alt="{{ ticket.event_name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                            {% else %}
+                                <i class="fas fa-music"></i>
+                            {% endif %}
                             <div class="overlay"></div>
                             <div class="badge-date">
                                 <i class="far fa-calendar-alt me-1"></i>
@@ -129,31 +142,28 @@
                                 ${{ "%.2f"|format(ticket.price) }} <span>USD</span>
                             </div>
                             
-                            <div class="seller-name">
-                                <i class="fas fa-user-circle me-1"></i> Listed by {{ ticket.seller.username }}
+                            <!-- Seller Info & Rating -->
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span class="text-secondary small">by</span>
+                                <a href="/seller_reviews/{{ ticket.seller.id }}" class="text-white small text-decoration-none">
+                                    {{ ticket.seller.username }}
+                                </a>
+                                {% set avg = ticket.seller.reviews_received|map(attribute='rating')|sum / ticket.seller.reviews_received|length if ticket.seller.reviews_received else 0 %}
+                                {% if avg > 0 %}
+                                    <span class="text-secondary small">
+                                        {% for i in range(5) %}
+                                            {% if i < avg|int %}
+                                                <i class="fas fa-star" style="color: #F59E0B; font-size: 0.7rem;"></i>
+                                            {% else %}
+                                                <i class="fas fa-star" style="color: #4a4a4a; font-size: 0.7rem;"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                        ({{ "%.1f"|format(avg) }})
+                                    </span>
+                                {% endif %}
                             </div>
                             
-                            <!-- Seller Rating -->
-<div class="d-flex align-items-center gap-2 mt-1">
-    <span class="text-secondary small">by</span>
-    <a href="/seller_reviews/{{ ticket.seller.id }}" class="text-white small text-decoration-none">
-        {{ ticket.seller.username }}
-    </a>
-    {% set avg = ticket.seller.reviews_received|map(attribute='rating')|sum / ticket.seller.reviews_received|length if ticket.seller.reviews_received else 0 %}
-    {% if avg > 0 %}
-        <span class="text-secondary small">
-            {% for i in range(5) %}
-                {% if i < avg|int %}
-                    <i class="fas fa-star" style="color: #F59E0B; font-size: 0.7rem;"></i>
-                {% else %}
-                    <i class="fas fa-star" style="color: #4a4a4a; font-size: 0.7rem;"></i>
-                {% endif %}
-            {% endfor %}
-            ({{ "%.1f"|format(avg) }})
-        </span>
-    {% endif %}
-</div>
-
+                            <!-- Buy Button -->
                             {% if current_user.is_authenticated %}
                                 {% if current_user.id != ticket.seller_id and not ticket.is_sold %}
                                     <a href="/buy_ticket/{{ ticket.id }}" class="btn btn-buy">
@@ -179,12 +189,13 @@
             {% endfor %}
         </div>
     {% else %}
+        <!-- ===== BETTER EMPTY STATE ===== -->
         <div class="text-center py-5">
             <div class="mb-4">
-                <i class="fas fa-ticket-alt" style="font-size: 4rem; color: var(--text-muted);"></i>
+                <i class="fas fa-ticket-alt" style="font-size: 5rem; color: var(--text-muted);"></i>
             </div>
             <h4 class="fw-bold text-white">No tickets found</h4>
-            <p class="text-secondary">Try adjusting your search or filters.</p>
+            <p class="text-secondary">Try adjusting your search or filters, or check back later.</p>
             <a href="/" class="btn btn-accent mt-2">
                 <i class="fas fa-undo me-2"></i> Clear Filters
             </a>

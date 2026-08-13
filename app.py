@@ -81,6 +81,7 @@ class Ticket(db.Model):
     price = db.Column(db.Float, nullable=False)
     original_price = db.Column(db.Float)
     proof_image = db.Column(db.String(300))
+    event_image = db.Column(db.String(300))  # <-- NEW: Event image
     is_sold = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
@@ -317,7 +318,7 @@ def list_ticket():
             flash(f'Invalid date or price format: {str(e)}', 'error')
             return render_template('list_ticket.html')
         
-        # Handle file upload
+        # Handle proof of purchase upload
         proof_filename = None
         if 'proof_image' in request.files:
             file = request.files['proof_image']
@@ -326,6 +327,16 @@ def list_ticket():
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 proof_filename = f"{timestamp}_{filename}"
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], proof_filename))
+        
+        # ===== NEW: Handle event image upload =====
+        event_image_filename = None
+        if 'event_image' in request.files:
+            file = request.files['event_image']
+            if file and file.filename and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                event_image_filename = f"event_{timestamp}_{filename}"
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], event_image_filename))
         
         # Create new ticket
         new_ticket = Ticket(
@@ -338,6 +349,7 @@ def list_ticket():
             price=price_float,
             original_price=original_price_float,
             proof_image=proof_filename,
+            event_image=event_image_filename,  # <-- NEW
             seller_id=current_user.id
         )
         

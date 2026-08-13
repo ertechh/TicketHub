@@ -62,6 +62,28 @@
             background: var(--accent-hover);
         }
         
+        /* ===== SMOOTH PAGE TRANSITIONS ===== */
+        .container, .main-content {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         /* ===== NAVIGATION ===== */
         .navbar-custom {
             background: rgba(10, 10, 10, 0.92) !important;
@@ -80,6 +102,11 @@
             font-size: 1.6rem;
             color: var(--text-primary);
             letter-spacing: -0.5px;
+            transition: transform 0.3s ease;
+        }
+        
+        .navbar-custom .navbar-brand:hover {
+            transform: scale(1.02);
         }
         
         .navbar-custom .navbar-brand i {
@@ -95,6 +122,7 @@
             border-radius: 8px;
             transition: all 0.2s ease;
             font-size: 0.95rem;
+            position: relative;
         }
         
         .navbar-custom .nav-link:hover {
@@ -115,6 +143,27 @@
             background: var(--accent-hover);
             transform: scale(1.02);
             box-shadow: 0 4px 20px var(--accent-glow);
+        }
+        
+        /* Mobile menu improvements */
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+        }
+        
+        .navbar-toggler:focus {
+            box-shadow: none;
+        }
+        
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255,255,255,0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+        
+        @media (max-width: 991px) {
+            .navbar-custom .nav-link.btn-accent {
+                margin-top: 0.5rem;
+                text-align: center;
+            }
         }
         
         /* ===== HERO SECTION ===== */
@@ -259,6 +308,17 @@
             overflow: hidden;
         }
         
+        .ticket-card .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .ticket-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+        
         .ticket-card .card-image .overlay {
             position: absolute;
             top: 0;
@@ -362,25 +422,34 @@
             margin-top: 0.5rem;
         }
         
-        /* ===== FLASH MESSAGES ===== */
-        .alert-custom {
-            border: none;
-            border-radius: var(--radius);
-            padding: 1rem 1.5rem;
-            font-weight: 500;
+        /* ===== FLASH MESSAGES (Toasts) ===== */
+        .toast-container {
+            z-index: 1100;
+        }
+        
+        .toast {
+            background: rgba(10, 10, 10, 0.95) !important;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            border-radius: var(--radius) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.4s ease-out;
         }
         
-        .alert-custom.alert-success {
-            background: rgba(52, 211, 153, 0.12);
-            color: #34D399;
-            border: 1px solid rgba(52, 211, 153, 0.2);
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
         
-        .alert-custom.alert-error {
-            background: rgba(248, 113, 113, 0.12);
-            color: #F87171;
-            border: 1px solid rgba(248, 113, 113, 0.2);
+        .toast .toast-body {
+            color: var(--text-primary);
+            font-weight: 500;
         }
         
         /* ===== FOOTER ===== */
@@ -457,7 +526,7 @@
             <a class="navbar-brand" href="/">
                 <i class="fas fa-ticket-alt"></i>TicketHub
             </a>
-            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -492,19 +561,25 @@
         </div>
     </nav>
 
-    <!-- ===== FLASH MESSAGES ===== -->
-    <div class="container mt-3">
+    <!-- ===== FLASH MESSAGES (Toast Notifications) ===== -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-custom alert-{{ category }} d-flex align-items-center" role="alert">
-                        {% if category == 'success' %}
-                            <i class="fas fa-check-circle me-2"></i>
-                        {% elif category == 'error' %}
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                        {% endif %}
-                        {{ message }}
-                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert"></button>
+                    <div class="toast align-items-center text-white border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                {% if category == 'success' %}
+                                    <i class="fas fa-check-circle me-2" style="color: #34D399;"></i>
+                                {% elif category == 'error' %}
+                                    <i class="fas fa-exclamation-circle me-2" style="color: #F87171;"></i>
+                                {% else %}
+                                    <i class="fas fa-info-circle me-2" style="color: #60A5FA;"></i>
+                                {% endif %}
+                                {{ message }}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+                        </div>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -512,7 +587,9 @@
     </div>
 
     <!-- ===== MAIN CONTENT ===== -->
-    {% block content %}{% endblock %}
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
 
     <!-- ===== FOOTER ===== -->
     <footer class="footer">
@@ -525,10 +602,10 @@
                     </p>
                 </div>
                 <div class="col-md-6 text-center text-md-end">
-                    <a href="#" class="me-3"><i class="fab fa-twitter"></i></a>
-                    <a href="#" class="me-3"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="me-3"><i class="fab fa-facebook"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="me-3" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="me-3" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="me-3" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
         </div>
@@ -536,5 +613,34 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div class="spinner-border text-accent" role="status" style="width: 4rem; height: 4rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
+    <script>
+        // Show spinner on form submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function() {
+                    document.getElementById('loadingSpinner').style.display = 'flex';
+                });
+            });
+        });
+        
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast');
+            toasts.forEach(toast => {
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 5000);
+            });
+        });
+    </script>
 </body>
 </html>
