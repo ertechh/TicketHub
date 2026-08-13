@@ -3,6 +3,23 @@
 {% block title %}Reviews for {{ seller.username }} - TicketHub{% endblock %}
 
 {% block content %}
+<style>
+    .review-card {
+        animation: fadeInUp 0.5s ease-out;
+    }
+    
+    .review-card:nth-child(1) { animation-delay: 0.05s; }
+    .review-card:nth-child(2) { animation-delay: 0.1s; }
+    .review-card:nth-child(3) { animation-delay: 0.15s; }
+    .review-card:nth-child(4) { animation-delay: 0.2s; }
+    .review-card:nth-child(5) { animation-delay: 0.25s; }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
 <div class="container py-4">
     <!-- Seller Header -->
     <div class="bg-card p-4 rounded-4 border border-secondary mb-4">
@@ -47,7 +64,7 @@
     {% if reviews %}
         <div class="row g-4">
             {% for review in reviews %}
-                <div class="col-12">
+                <div class="col-12 review-card">
                     <div class="bg-card p-4 rounded-4 border border-secondary">
                         <div class="d-flex justify-content-between align-items-start">
                             <div>

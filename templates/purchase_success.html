@@ -3,104 +3,160 @@
 {% block title %}Purchase Successful! - TicketHub{% endblock %}
 
 {% block content %}
+<style>
+    /* Success Page Animations */
+    .success-icon {
+        font-size: 5rem;
+        display: inline-block;
+        animation: successPop 0.8s ease-out forwards;
+    }
+    
+    @keyframes successPop {
+        0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+        60% { transform: scale(1.3) rotate(5deg); }
+        100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    
+    .confetti-piece {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        animation: confettiFall 3s ease-out forwards;
+        pointer-events: none;
+        z-index: 9999;
+    }
+    
+    @keyframes confettiFall {
+        0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+        100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    
+    .ticket-details {
+        animation: fadeInUp 0.6s ease-out;
+    }
+</style>
+
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-8">
             <!-- Success Header -->
             <div class="text-center mb-5">
                 <div class="mb-4">
-                    <i class="fas fa-check-circle" style="font-size: 5rem; color: #34D399;"></i>
+                    <i class="fas fa-check-circle success-icon" style="color: #34D399;"></i>
                 </div>
-                <h1 class="fw-bold">🎉 Purchase Successful!</h1>
-                <p class="text-muted">Your ticket has been confirmed. Check your email for details.</p>
+                <h1 class="fw-bold text-white">🎉 Purchase Successful!</h1>
+                <p class="text-secondary">Your ticket has been confirmed. Check your email for details.</p>
             </div>
 
             <!-- Ticket Details Card -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h4 class="fw-bold mb-3">
-                    <i class="fas fa-ticket-alt me-2" style="color: var(--primary);"></i>Ticket Details
+            <div class="bg-card p-4 rounded-4 border border-secondary mb-4 ticket-details">
+                <h4 class="fw-bold text-white mb-3">
+                    <i class="fas fa-ticket-alt me-2" style="color: var(--accent);"></i>Ticket Details
                 </h4>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Event</small>
-                            <strong>{{ ticket.event_name }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Event</small>
+                            <strong class="text-white">{{ ticket.event_name }}</strong>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Venue</small>
-                            <strong>{{ ticket.venue }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Venue</small>
+                            <strong class="text-white">{{ ticket.venue }}</strong>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Date</small>
-                            <strong>{{ ticket.event_date.strftime('%B %d, %Y at %I:%M %p') }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Date</small>
+                            <strong class="text-white">{{ ticket.event_date.strftime('%B %d, %Y at %I:%M %p') }}</strong>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Price Paid</small>
-                            <strong class="text-primary">${{ "%.2f"|format(purchase.amount) }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Price Paid</small>
+                            <strong class="text-white" style="color: var(--accent);">${{ "%.2f"|format(purchase.amount) }}</strong>
                         </div>
                     </div>
                     {% if ticket.seat_section %}
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Seat</small>
-                            <strong>Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Seat</small>
+                            <strong class="text-white">Section {{ ticket.seat_section }}, Row {{ ticket.seat_row }}, Seat {{ ticket.seat_number }}</strong>
                         </div>
                     </div>
                     {% endif %}
                     <div class="col-md-6">
-                        <div class="p-3 bg-light rounded-3">
-                            <small class="text-muted d-block">Order ID</small>
-                            <strong>#{{ purchase.id }}</strong>
+                        <div class="bg-dark p-3 rounded-3 border border-secondary">
+                            <small class="text-secondary d-block">Order ID</small>
+                            <strong class="text-white">#{{ purchase.id }}</strong>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Payment Breakdown -->
-            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                <h4 class="fw-bold mb-3">
-                    <i class="fas fa-receipt me-2" style="color: var(--primary);"></i>Payment Breakdown
+            <div class="bg-card p-4 rounded-4 border border-secondary mb-4">
+                <h4 class="fw-bold text-white mb-3">
+                    <i class="fas fa-receipt me-2" style="color: var(--accent);"></i>Payment Breakdown
                 </h4>
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span>Ticket Price</span>
-                    <span class="fw-bold">${{ "%.2f"|format(purchase.amount + purchase.platform_fee) }}</span>
+                <div class="d-flex justify-content-between py-2 border-bottom border-secondary">
+                    <span class="text-secondary">Ticket Price</span>
+                    <span class="text-white fw-bold">${{ "%.2f"|format(purchase.amount + purchase.platform_fee) }}</span>
                 </div>
-                <div class="d-flex justify-content-between py-2 border-bottom">
-                    <span>
-                        <i class="fas fa-percent me-1" style="color: var(--primary);"></i> Platform Fee
+                <div class="d-flex justify-content-between py-2 border-bottom border-secondary">
+                    <span class="text-secondary">
+                        <i class="fas fa-percent me-1" style="color: var(--accent);"></i> Platform Fee
                     </span>
-                    <span class="text-muted">${{ "%.2f"|format(purchase.platform_fee) }}</span>
+                    <span class="text-secondary">${{ "%.2f"|format(purchase.platform_fee) }}</span>
                 </div>
                 <div class="d-flex justify-content-between py-2">
-                    <span class="fw-bold">Total Charged</span>
-                    <span class="fw-bold text-primary">${{ "%.2f"|format(purchase.amount) }}</span>
+                    <span class="text-white fw-bold">Total Charged</span>
+                    <span class="text-white fw-bold" style="color: var(--accent);">${{ "%.2f"|format(purchase.amount) }}</span>
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="d-flex flex-wrap gap-3 justify-content-center">
-                <a href="/" class="btn btn-gradient">
+                <a href="/" class="btn btn-accent">
                     <i class="fas fa-search me-2"></i> Browse More Tickets
                 </a>
-                <a href="/dashboard" class="btn btn-outline-gradient">
+                <a href="/dashboard" class="btn btn-outline-light">
                     <i class="fas fa-user me-2"></i> View My Purchases
                 </a>
             </div>
 
             <!-- Email Note -->
             <div class="text-center mt-4">
-                <p class="text-muted small">
+                <p class="text-secondary small">
                     <i class="fas fa-envelope me-1"></i> 
-                    A confirmation email has been sent to your registered email address.
+                    A confirmation email with your ticket has been sent to your registered email address.
                 </p>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // ===== CONFETTI EFFECT =====
+    document.addEventListener('DOMContentLoaded', function() {
+        const colors = ['#6C3CE1', '#8B5CF6', '#34D399', '#F59E0B', '#F87171', '#60A5FA', '#EC4899', '#14B8A6'];
+        for (let i = 0; i < 60; i++) {
+            const piece = document.createElement('div');
+            piece.className = 'confetti-piece';
+            piece.style.left = Math.random() * 100 + 'vw';
+            piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            piece.style.animationDelay = (Math.random() * 0.8) + 's';
+            piece.style.width = (Math.random() * 8 + 4) + 'px';
+            piece.style.height = (Math.random() * 8 + 4) + 'px';
+            piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+            document.body.appendChild(piece);
+            
+            // Remove confetti after animation
+            setTimeout(() => piece.remove(), 5000);
+        }
+    });
+</script>
 {% endblock %}

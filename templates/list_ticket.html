@@ -3,6 +3,37 @@
 {% block title %}List New Ticket - TicketHub{% endblock %}
 
 {% block content %}
+<style>
+    .form-container {
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .form-group {
+        opacity: 0;
+        animation: fadeInField 0.4s ease-out forwards;
+    }
+    
+    .form-group:nth-child(1) { animation-delay: 0.05s; }
+    .form-group:nth-child(2) { animation-delay: 0.1s; }
+    .form-group:nth-child(3) { animation-delay: 0.15s; }
+    .form-group:nth-child(4) { animation-delay: 0.2s; }
+    .form-group:nth-child(5) { animation-delay: 0.25s; }
+    .form-group:nth-child(6) { animation-delay: 0.3s; }
+    .form-group:nth-child(7) { animation-delay: 0.35s; }
+    .form-group:nth-child(8) { animation-delay: 0.4s; }
+    .form-group:nth-child(9) { animation-delay: 0.45s; }
+    
+    @keyframes fadeInField {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -18,11 +49,11 @@
                 </a>
             </div>
             
-            <div class="bg-card p-4 rounded-4 border border-secondary">
+            <div class="bg-card p-4 rounded-4 border border-secondary form-container">
                 <form method="POST" enctype="multipart/form-data">
                     <div class="row g-4">
                         <!-- Event Name -->
-                        <div class="col-12">
+                        <div class="col-12 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-heading me-1" style="color: var(--accent);"></i>Event Name *
                             </label>
@@ -31,14 +62,14 @@
                         </div>
                         
                         <!-- Event Date & Venue -->
-                        <div class="col-md-6">
+                        <div class="col-md-6 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-calendar-day me-1" style="color: var(--accent);"></i>Event Date & Time *
                             </label>
                             <input type="datetime-local" name="event_date" class="form-control bg-dark text-white border-secondary" required>
                         </div>
                         
-                        <div class="col-md-6">
+                        <div class="col-md-6 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-map-pin me-1" style="color: var(--accent);"></i>Venue *
                             </label>
@@ -47,7 +78,7 @@
                         </div>
                         
                         <!-- Seat Details -->
-                        <div class="col-12">
+                        <div class="col-12 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-chair me-1" style="color: var(--accent);"></i>Seat Details <span class="text-secondary">(optional)</span>
                             </label>
@@ -65,7 +96,7 @@
                         </div>
                         
                         <!-- Price -->
-                        <div class="col-md-6">
+                        <div class="col-md-6 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-dollar-sign me-1" style="color: var(--accent);"></i>Your Price (USD) *
                             </label>
@@ -76,7 +107,7 @@
                             </div>
                         </div>
                         
-                        <div class="col-md-6">
+                        <div class="col-md-6 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-tag me-1" style="color: var(--accent);"></i>Original Face Value
                             </label>
@@ -88,7 +119,7 @@
                         </div>
                         
                         <!-- Proof of Purchase -->
-                        <div class="col-12">
+                        <div class="col-12 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-file-upload me-1" style="color: var(--accent);"></i>Proof of Purchase <span class="text-secondary">(optional)</span>
                             </label>
@@ -98,8 +129,8 @@
                             <small class="text-secondary">Max file size: 16MB</small>
                         </div>
                         
-                        <!-- ===== NEW: Event Image Upload ===== -->
-                        <div class="col-12">
+                        <!-- Event Image Upload -->
+                        <div class="col-12 form-group">
                             <label class="fw-semibold mb-2 text-white">
                                 <i class="fas fa-image me-1" style="color: var(--accent);"></i>Event Image <span class="text-secondary">(optional)</span>
                             </label>
@@ -116,7 +147,7 @@
                         </div>
                         
                         <!-- Submit Button -->
-                        <div class="col-12">
+                        <div class="col-12 form-group">
                             <button type="submit" class="btn btn-accent w-100 py-3" id="submitBtn">
                                 <i class="fas fa-plus-circle me-2"></i> List Ticket
                             </button>
