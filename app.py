@@ -542,6 +542,16 @@ def dashboard():
 def my_tickets():
     purchases = Purchase.query.filter_by(buyer_id=current_user.id).order_by(Purchase.created_at.desc()).all()
     now = datetime.now()
+    
+    # Generate QR codes for each purchase
+    for purchase in purchases:
+        purchase.qr_code = generate_ticket_qr(
+            purchase.ticket.id,
+            purchase.ticket.event_name,
+            purchase.ticket.venue,
+            purchase.ticket.event_date.strftime('%B %d, %Y at %I:%M %p')
+        )
+    
     return render_template('my_tickets.html', purchases=purchases, now=now)
 
 @app.route('/download_ticket/<int:purchase_id>')
