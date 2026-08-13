@@ -84,6 +84,97 @@
             100% { transform: scale(1); }
         }
         
+        /* ===== BUTTONS - FIXED VISIBILITY ===== */
+        .btn-accent {
+            background: #6C3CE1 !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.6rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .btn-accent:hover {
+            background: #8B5CF6 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(108, 60, 225, 0.4);
+            color: white !important;
+        }
+
+        .btn-accent i {
+            color: white !important;
+        }
+
+        .btn-buy {
+            background: #6C3CE1 !important;
+            border: none !important;
+            color: white !important;
+            font-weight: 600;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: auto;
+            cursor: pointer;
+        }
+
+        .btn-buy:hover {
+            background: #8B5CF6 !important;
+            transform: scale(1.02);
+            box-shadow: 0 4px 20px rgba(108, 60, 225, 0.3);
+            color: white !important;
+        }
+
+        .btn-buy:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-outline-light {
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid #2a2a2a !important;
+            padding: 0.6rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--text-secondary) !important;
+        }
+
+        /* Dashboard action buttons */
+        .btn-primary-action {
+            background: #6C3CE1 !important;
+            color: white !important;
+            border: none !important;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        .btn-primary-action:hover {
+            background: #8B5CF6 !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(108, 60, 225, 0.3);
+            color: white !important;
+        }
+        
         /* ===== NAVIGATION ===== */
         .navbar-custom {
             background: rgba(10, 10, 10, 0.92) !important;
@@ -131,7 +222,7 @@
         }
         
         .navbar-custom .nav-link.btn-accent {
-            background: var(--accent);
+            background: #6C3CE1 !important;
             color: white !important;
             padding: 0.5rem 1.8rem !important;
             border-radius: 50px;
@@ -140,9 +231,14 @@
         }
         
         .navbar-custom .nav-link.btn-accent:hover {
-            background: var(--accent-hover);
+            background: #8B5CF6 !important;
             transform: scale(1.02);
-            box-shadow: 0 4px 20px var(--accent-glow);
+            box-shadow: 0 4px 20px rgba(108, 60, 225, 0.3);
+            color: white !important;
+        }
+        
+        .navbar-custom .nav-link.btn-accent i {
+            color: white !important;
         }
         
         /* Mobile menu improvements */
@@ -379,41 +475,6 @@
             font-size: 0.9rem;
             font-weight: 400;
             color: var(--text-muted);
-        }
-        
-        .ticket-card .card-body .btn-buy {
-            background: var(--accent);
-            border: none;
-            color: white;
-            font-weight: 600;
-            padding: 0.6rem 1.5rem;
-            border-radius: 50px;
-            width: 100%;
-            transition: all 0.3s ease;
-            margin-top: auto;
-        }
-        
-        .ticket-card .card-body .btn-buy:hover {
-            background: var(--accent-hover);
-            transform: scale(1.02);
-            box-shadow: 0 4px 20px var(--accent-glow);
-        }
-        
-        .ticket-card .card-body .btn-buy:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        
-        .ticket-card .card-body .sold-badge {
-            background: rgba(255, 0, 0, 0.15);
-            color: #ff6b6b;
-            padding: 0.25rem 0.75rem;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            display: inline-block;
-            border: 1px solid rgba(255, 0, 0, 0.2);
         }
         
         .ticket-card .card-body .seller-name {
